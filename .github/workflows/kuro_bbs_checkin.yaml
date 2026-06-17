@@ -1,0 +1,70 @@
+name: Kuro BBS Check In
+
+on:
+    schedule:
+        - cron: "0 17 * * *"
+    workflow_dispatch:
+
+jobs:
+    auto-checkin:
+        runs-on: ubuntu-latest
+        steps:
+            # 1. 检出代码
+            - name: Checkout Code
+              run: |
+                  git clone https://github.com/mxyooR/Kuro-autosignin.git
+
+            # 2. 设置 Python 环境
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.10"
+
+            # 3. 安装依赖
+            - name: Install dependencies
+              working-directory: Kuro-autosignin
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install .
+
+            # 4. 配置文件
+            - name: Configure
+              working-directory: Kuro-autosignin
+              env:
+                  KJQ_TOKEN: ${{ secrets.KJQ_TOKEN }}
+                  WECOM_BOT_KEY: ${{ secrets.WECOM_BOT_KEY }}
+              run: |
+                  cp config/name.yaml.example config/kuro.yaml
+                  cp config/push.ini.example config/push.ini
+
+                  python -c "
+                  import re, os
+
+                  with open('config/kuro.yaml', 'r') as f:
+                      content = f.read()
+                  token = os.environ.get('KJQ_TOKEN', '')
+                  content = re.sub(r'^token:\s*\".*\"', f'token: \"{token}\"', content, flags=re.MULTILINE)
+                  with open('config/kuro.yaml', 'w') as f:
+                      f.write(content)
+
+                  with open('config/push.ini', 'r') as f:
+                      content = f.read()
+                  content = re.sub(r'^push_level=.*', 'push_level=2', content, flags=re.MULTILINE)
+                  content = re.sub(r'^push_server=.*', 'push_server=wecomrobot', content, flags=re.MULTILINE)
+                  key = os.environ.get('WECOM_BOT_KEY', '')
+                  content = re.sub(
+                      r'^url=https://qyapi\.weixin\.qq\.com/cgi-bin/webhook/send\?key=.*',
+                      f'url=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={key}',
+                      content, flags=re.MULTILINE
+                  )
+                  with open('config/push.ini', 'w') as f:
+                      f.write(content)
+                  "
+
+            # 5. 运行脚本
+            - name: Run auto checkin script
+              id: run_script
+              working-directory: Kuro-autosignin
+              continue-on-error: true
+              run: |
+                  python main.py
