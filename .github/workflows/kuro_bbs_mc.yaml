@@ -5,7 +5,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    auto-checkin:
+    auto-scan:
         runs-on: ubuntu-latest
         steps:
             # 1. 检出代码
