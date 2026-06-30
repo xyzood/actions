@@ -1,5 +1,4 @@
-name: Kuro BBS MC Preview Code
-
+name: Kuro BBS MC
 on:
     schedule:
         - cron: "0 18 * * *"
@@ -33,4 +32,4 @@ jobs:
               env:
                   WECOM_WEBHOOK_URL: ${{ secrets.WECOM_WEBHOOK_URL }}
               run: |
-                  python kuro_mc_preview_code.py
+                  python kuro_bbs_mc.py
