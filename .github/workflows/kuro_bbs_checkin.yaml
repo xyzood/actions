@@ -64,10 +64,9 @@ jobs:
       # 5. 运行脚本
       - name: Run auto checkin script
         uses: nick-fields/retry@v3
-        working_directory: Kuro-autosignin
         with:
           max_attempts: 2
           retry_on: error
           timeout_minutes: 30
           command: |
-            python main.py
+            python Kuro-autosignin/main.py
