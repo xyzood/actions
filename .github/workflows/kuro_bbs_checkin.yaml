@@ -8,6 +8,10 @@ on:
 jobs:
     auto-checkin:
         runs-on: ubuntu-latest
+        strategy:
+          max-attempts: 2
+          fail-fast: false
+          
         steps:
             # 1. 检出代码
             - name: Checkout Code
@@ -64,10 +68,6 @@ jobs:
             # 5. 运行脚本
             - name: Run auto checkin script
               working-directory: Kuro-autosignin
-              uses: trstringer/github-action-retry@1.7.0
-              with:
-                  retries: 1
-                  delay-seconds: 60
-                  command: |
-                    python main.py
+              run: |
+                  python main.py
                 
