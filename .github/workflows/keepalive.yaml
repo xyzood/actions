@@ -1,4 +1,4 @@
-name: Keepalive
+name: Keep Alive
 run-name: Auto keepalive commit
 on:
   schedule:
